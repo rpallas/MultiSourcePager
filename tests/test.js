@@ -1,9 +1,9 @@
-var dataSource, limit;
+var multiSource, limit, offset;
 
 module('PagedMultiSource', {
     setup: function() {
-        limit = 25;
-        dataSource = new PagedMultiSource(limit);
+        limit = 25; offset = 0;
+        multiSource = new PagedMultiSource(limit, offset);
     },
     teardown: function() {
         // clean up after each test
@@ -19,8 +19,9 @@ test("It has a working test harness", function() {
     notEqual(true, false, "We're up and running...");
 });
 
-test("It sets the correct limit (pagesize)", function() {
-    equal(dataSource.limit, limit, "The correct limit was set");
+test("It initialises correctly", function() {
+    equal(multiSource.limit, limit, "The correct limit (pagesize) was set");
+    equal(multiSource.offset, offset, "The correct offset was set");
 });
 
 asyncTest("It retrieves a list of REST endpoints", function(){
@@ -28,10 +29,10 @@ asyncTest("It retrieves a list of REST endpoints", function(){
     ajaxMockIndexWith2Sources();
     ajaxMockAnySourceWith1Record();
     // Act
-    dataSource.getSources("/index.php")
+    multiSource.getSources("/index.php")
         .done(function(){
             // Assert
-            equal(dataSource.sources.length, 2, "a list of endpoints was stored with correct length");
+            equal(multiSource.sources.length, 2, "A list of endpoints was stored with correct length");
             start();
         });
 });
@@ -39,16 +40,22 @@ asyncTest("It retrieves a list of REST endpoints", function(){
 asyncTest("It gets the next batch of records from each source", function(){
     // Arrange
     ajaxMockAnySourceWith1Record();
-    dataSource.sources = get2Sources();
+    multiSource.sources = get2Sources();
+    var currentOffset = multiSource.offset;
     // Act
-    dataSource.getNext()
+    multiSource.getNext()
         .done(function(){
             // Assert
-            equal(dataSource.totalRecords, 2, "correct number of total records was set");
-            equal(dataSource.recordBuffer.length, 2, "The correct number of records was stored in the buffer")
+            equal(multiSource.totalRecords, 2, "The correct number of total records was calculated");
+            equal(multiSource.recordBuffer.length, 2, "The records were stored in the buffer");
+            equal(multiSource.offset, currentOffset + 1, "The offset was incremented");
             start();
         });
 });
+
+//test("It", function(){
+//
+//});
 
 /**
  * Utilities

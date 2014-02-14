@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Paging over multiple data sets</title>
+        <link rel="stylesheet" href="solution.css">
+    </head>
+    <body>
+
+        <div class='pager'>
+
+            <div class="ko-grid-pageLinks">
+                <span>Page:</span>
+                <!-- ko foreach: ko.utils.range(0, maxPageIndex) -->
+                    <a href="#" data-bind="text: $data + 1, click: function() { $root.goToPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a>
+                <!-- /ko -->
+            </div>
+
+            <table class="ko-grid" cellspacing="0">
+                <thead>
+                    <tr data-bind="foreach: columns">
+                        <th data-bind="text: headerText"></th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: items">
+                    <tr data-bind="foreach: $parent.columns">
+                        <td data-bind="text: typeof rowText == 'function' ? rowText($parent) : $parent[rowText] "></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <script src="lib/underscore.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/knockout.js"></script>
+        <script src="src/pagedGridVm.js"></script>
+        <script src="src/pagedMultiSource.js"></script>
+        <script src="src/main.js"></script>
+    </body>
+</html>

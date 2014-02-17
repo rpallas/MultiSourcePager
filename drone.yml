@@ -1,0 +1,2 @@
+script:
+  - phantomjs tests/lib/run-qunit.js file://`pwd`/tests/index.html
